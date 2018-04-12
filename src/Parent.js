@@ -1,42 +1,113 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Circle from './Circle';
 import Counter from './Counter';
 
-export default class Parent extends React.Component {
+class Parent extends React.Component {
 
     constructor(props)
     {
         super(props);
         this.state = {
-            isInc: false,
-            isDec: false
+            valUp: 0,
+            valDown: 0,
+            valLeft: 0,
+            valRight: 0,
+            start: 0,
+            stop: 0,
+            before: 0,
+            reset: 0
           };
-        this.handleDecrease = this.handleDecrease.bind(this);
-        this.handleIncrease = this.handleIncrease.bind(this);
+        this.handleUpdateUp = this.handleUpdateUp.bind(this);
+        this.handleUpdateDown = this.handleUpdateDown.bind(this);
+        this.handleUpdateLeft = this.handleUpdateLeft.bind(this);
+        this.handleUpdateRight = this.handleUpdateRight.bind(this);
+        this.handleReset = this.handleReset.bind(this);
+        this.onClickStart = this.onClickStart.bind(this);
+        this.onClickStop = this.onClickStop.bind(this);
     }
 
-    handleIncrease(isInc){
+    handleUpdateUp(v){
         this.setState({
-            isInc : isInc
+            valUp : v
         });
     }
 
-    handleDecrease(isDec){
+    handleUpdateDown(v){
         this.setState({
-            isDec: isDec
+            valDown : v
+        })
+    }
+
+    handleUpdateRight(v){
+        this.setState({
+            valRight : v
         });
     }
+
+    handleUpdateLeft(v){
+        this.setState({
+            valLeft : v
+        });
+    }
+
+    handleReset(r){
+        this.setState({
+            reset : r
+        });
+    }
+    
+    onClickStart(){
+        this.setState({
+            start : 1,
+            stop : 0,
+            before : 0
+        })
+    }
+
+    onClickStop(){
+        this.setState({
+            start : 0,
+            stop : 1,
+            reset : 1
+        })
+    }
+    componentWillMount(){
+        this.setState({
+            before: 1
+        });
+    }
+
     render() {
         return(
             <div>
-                <Counter isInc={this.state.isInc}
-                isDec={this.state.isDec}
+                <h3>Top and Bottom Wall</h3>
+                <Counter valUp={this.state.valUp}
+                valDown={this.state.valDown}
+                start={this.state.start}
+                reset={this.state.reset}
+                handleReset={this.handleReset}
                 />
-                <Circle onInc={this.handleIncrease}
-                onDec={this.handleDecrease}
+                <h3>Left and Right Wall</h3>
+                <Counter valDown={this.state.valLeft}
+                valUp={this.state.valRight}
+                start={this.state.start}
+                reset={this.state.reset}
+                handleReset={this.handleReset}
+                />
+                <button type="submit" start={this.state.start} onClick={this.onClickStart} >Start</button>
+                <button type="submit" stop={this.state.stop} onClick={this.onClickStop} >Stop</button>
+                <canvas></canvas>
+                <Circle handleUpdateUp={this.handleUpdateUp}
+                handleUpdateDown={this.handleUpdateDown}
+                handleUpdateLeft={this.handleUpdateLeft}
+                handleUpdateRight={this.handleUpdateRight}
+                start={this.state.start}
+                stop={this.state.stop}
+                before={this.state.before}
                 />
             </div>
         );
     }
 }
+
+export default Parent;

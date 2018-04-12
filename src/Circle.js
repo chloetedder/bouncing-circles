@@ -1,5 +1,6 @@
 import React from 'react';
-export default class Circle extends React.Component {
+
+class Circle extends React.Component {
 // setup canvas
 
 canvas = document.querySelector('canvas');
@@ -16,8 +17,8 @@ constructor(props) {
   super(props);
   this.x = this.random(0,this.width);
   this.y = this.random(0,this.height);
-  this.velX = this.random(-7,7);
-  this.velY = this.random(-7,7);
+  this.velX = this.random(-4,4);
+  this.velY = this.random(-4,4);
   this.color = 'rgb(' + this.random(0,255) + ',' + this.random(0,255) + ',' + this.random(0,255) +')';
   this.size = this.random(10,20);
   this.circles = [];
@@ -27,14 +28,12 @@ constructor(props) {
   this.draw = this.draw.bind(this);
   this.update = this.update.bind(this);
   this.collisionDetect = this.collisionDetect.bind(this);
-  
-  this.state = {
-    count : 0
-  };
 
 }
 
-
+shouldComponentUpdate(nextProps){
+  return false;
+}
 
 // function to generate random number
 
@@ -55,36 +54,39 @@ draw() {
 // define circle update method
 
 update() {
+  
   if((this.x + this.size) >= this.width) {
     this.velX = -(this.velX);
+    this.props.handleUpdateRight(1);
+  }
+  else{
+    this.props.handleUpdateRight(0);
   }
 
   if((this.x - this.size) <= 0) {
     this.velX = -(this.velX);
-
+    this.props.handleUpdateLeft(-1);
+  }
+  else{
+    this.props.handleUpdateLeft(0);
   }
 
   if((this.y + this.size) >= this.height) {
     this.velY = -(this.velY);
+    this.props.handleUpdateUp(1);
+  } 
+  else{
+    this.props.handleUpdateUp(0);
   }
 
   if((this.y - this.size) <= 0) {
     this.velY = -(this.velY);
-
+    this.props.handleUpdateDown(-1);
+  }
+  else{
+    this.props.handleUpdateDown(0);
   }
 
-  if(((this.x - this.size) <= 0) || ((this.y - this.size) <= 0)){
-    this.setState({
-      count: this.state.count+1
-    })
-  }
-
-  if(((this.y + this.size) >= this.height) || ((this.x + this.size) >= this.width)){
-    this.setState({
-      count : this.state.count-1
-    });
-  } 
-  
   this.x += this.velX;
   this.y += this.velY;
 }
@@ -118,32 +120,43 @@ loop() {
   this.ctx.fillRect(0,0,this.width,this.height);
 
   while(this.circles.length < 25) {
-    let circle = new Circle();
+    let circle = new Circle(this.props);
     this.circles.push(circle);
   }
 
   for(let circle of this.circles) {
+    if(this.props.before == 1){
+    circle.draw();
+    }
+    if(this.props.start == 1){
     circle.draw();
     circle.update();
     circle.collisionDetect();
+    }
+    else{
+      circle.draw();
+    }
   }
  
   requestAnimationFrame(this.loop);
 }
 
 
-
+componentWillMount(){
+  this.loop();
+}
 
 
 render(){
-  this.loop();
-  console.log(this.state.count);
+  //this.loop();
   return (
   <div>
-    <h1>{this.state.count}</h1>
-    <canvas></canvas>
+    {//<canvas></canvas>
+    }
   </div>
   );
 }
 
 }
+
+export default Circle;
